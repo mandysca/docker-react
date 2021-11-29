@@ -1,0 +1,51 @@
+# Specifies version of docker compose we are using 
+# Indentation is important 
+# This is compose file to start a development and testing server 
+version: '3'
+
+# Services ~ container 
+# By defining the two services together docker compose automatically 
+# creates both on same network 
+services: 
+  # Create docker container for the app 
+  # You can name this anything 
+  web-app: 
+    # What to do if it crashes, for this specific container 
+    # Other options "no (default), "on-failure" (specific error code, 
+    # other than 0, which is for successful exit)
+    # Or other option "unless-stopped" (by developer e.g.)
+    restart: always 
+    
+    # look in the current directory for an image 
+    build: 
+      # Context is current working directory 
+      context: . 
+      # name of the docker file 
+      # This file starts the development server 
+      dockerfile: dockerfile.dev 
+    
+    # Map ports of image to computer 
+    ports: 
+      #Map the port #1 on local machine to port on docker image 
+      - "3000:3000"
+
+    # volumes mapping to reference local working directory
+    volumes: 
+      # node_modules inside the container doesn't reference anything 
+      # It references itself 
+      - /app/node_modules 
+      # the "." current directory is referenced by /app directory 
+      # inside the container. Except the node_modules 
+      - .:/app 
+  # Create a new service for tests 
+  tests: 
+    build: 
+      context: .
+      dockerfile: dockerfile.dev 
+    volumes:
+      - /app/node_modules 
+      - .:/app 
+    # Provide a command to override default 
+    command: ["npm", "run", "test"]
+
+

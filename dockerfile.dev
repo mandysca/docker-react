@@ -1,0 +1,19 @@
+# File for running in development environment locally 
+# Create from image alpine 
+FROM node:16-alpine
+
+# Set working directory 
+WORKDIR '/app'
+
+# Copy the package.json that has the information on dependencies 
+# to the working directory 
+COPY ./package.json ./ 
+
+# Run install command to get the dependencies 
+RUN npm install 
+
+# Copy rest of the files into docker 
+COPY ./ ./ 
+
+# Call the run command in package.json
+CMD ["npm", "run", "start"]
